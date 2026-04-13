@@ -30,6 +30,10 @@ fi
 # --- Main Logic ---
 echo "=== Setting up TailBeacon Health Check services... ==="
 
+# 0. Sync dependencies (useful for re-runs after updating code)
+echo "0. Syncing dependencies with uv..."
+su - "$ACTUAL_USER" -c "cd \"$SCRIPT_DIR\" && \"$UV_PATH\" sync"
+
 # 1. Generate and Copy service files
 echo "1. Generating systemd service files and replacing if present..."
 sed -e "s|{{USER}}|$ACTUAL_USER|g" \

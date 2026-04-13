@@ -4,6 +4,7 @@ app = FastAPI()
 
 
 @app.get("/health")
+@app.head("/health")
 def read_health_check():
     """
     Simple health check endpoint that confirms the server is running.

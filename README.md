@@ -13,6 +13,26 @@ Before you begin, ensure you have installed the following tools:
 -   **[uv](https://github.com/astral-sh/uv#installation):** An extremely fast Python package installer and resolver.
 -   **[Tailscale](https://tailscale.com/download):** For securely exposing the health check endpoint to the internet.
 
+### Enable Tailscale Funnel
+
+Before deploying the Funnel service, you **must enable Funnel** for your expected devices in your Tailscale Admin Console.
+
+1.  **Enable DNS Features:** Go to the **DNS** tab in the admin console and make sure both **MagicDNS** and **HTTPS Certificates** are enabled.
+2.  **Update Access Controls:** Navigate to the **Access Controls** tab. Add the `funnel` attribute to your ACL policy. To allow all members to use Funnel, include the following under `nodeAttrs`:
+
+```json
+{
+  // The rest of your file
+  
+  "nodeAttrs": [
+    {
+      "target": ["autogroup:member"],
+      "attr": ["funnel"]
+    }
+  ]
+}
+```
+
 ## Setup and Installation
 
 This project uses `uv` for package management.
@@ -38,6 +58,28 @@ uv run uvicorn main:app --host 0.0.0.0 --port 54321
 ```
 
 The server will be available at `http://0.0.0.0:54321`.
+
+### Testing
+
+While the server is running, open a new terminal window and run:
+
+```bash
+curl http://localhost:54321/health
+```
+
+A successful response will be:
+
+```json
+{
+  "status": "ok"
+}
+```
+
+### Supported Methods
+
+The `/health` endpoint supports both `GET` and `HEAD` ping requests. 
+
+**Note on UptimeRobot:** The `HEAD` method is explicitly supported because services like [UptimeRobot](https://uptimerobot.com/) only allow `HEAD` HTTP method requests on their free tier. You can safely configure your free uptime monitor to point to this `/health` endpoint..
 
 ## Deployment
 
@@ -111,12 +153,19 @@ After deployment, your server will be accessible at `https://<your-machine-name>
 The full URL for your health check to add to an uptime monitor is:
 `https://<your-machine-name>.<your-tailnet>.ts.net/health`
 
-## Health Check Endpoint
+### Testing the Deployment
 
+Once deployed via the setup script, you can test the health check endpoint in two ways:
 
-```bash
-curl http://localhost:54321/health
-```
+1.  **Locally (verifying the systemd service):**
+    ```bash
+    curl http://127.0.0.1:54321/health
+    ```
+
+2.  **Remotely (verifying the Tailscale Funnel):**
+    ```bash
+    curl https://<your-machine-name>.<your-tailnet>.ts.net/health
+    ```
 
 A successful response will be:
 
