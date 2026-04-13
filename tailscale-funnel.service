@@ -1,0 +1,13 @@
+[Unit]
+Description=Tailscale Funnel for TailBeacon Health Check
+After=tailscaled.service
+Requires=tailscaled.service
+
+[Service]
+User={{USER}}
+ExecStart=/usr/bin/tailscale funnel {{PORT}}
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
