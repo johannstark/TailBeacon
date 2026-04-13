@@ -1,4 +1,6 @@
-# TailBeacon - A remote server health check using FastAPI and Tailscale Funnel
+<img width="3808" height="1120" alt="Gemini_Generated_Image_cuscm9cuscm9cusc" src="https://github.com/user-attachments/assets/e643bc1b-e3e8-42b7-8e03-56e701654830" />
+
+***
 
 A simple, lightweight health check server built with FastAPI. This server provides a single endpoint, `/health`, that returns a `200 OK` status to indicate that the machine is online and the application is running.
 
@@ -123,3 +125,6 @@ A successful response will be:
   "status": "ok"
 }
 ```
+
+***
+Made in Colombia 🇨🇴 with ❤️
