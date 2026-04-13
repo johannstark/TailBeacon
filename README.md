@@ -39,7 +39,7 @@ This project uses `uv` for package management.
 
 1.  **Clone the repository:**
     ```bash
-    git clone <your-repo-url>/TailBeacon.git
+    git clone https://github.com/johannstark/TailBeacon.git/TailBeacon.git
     cd TailBeacon
     ```
 
