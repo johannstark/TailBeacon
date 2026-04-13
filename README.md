@@ -1,0 +1,125 @@
+# TailBeacon - A remote server health check using FastAPI and Tailscale Funnel
+
+A simple, lightweight health check server built with FastAPI. This server provides a single endpoint, `/health`, that returns a `200 OK` status to indicate that the machine is online and the application is running.
+
+It is designed to be used with an external uptime monitoring service (like UptimeRobot, Better Uptime, etc.) to provide reliable notifications if the server goes offline.
+
+## Prerequisites
+
+Before you begin, ensure you have installed the following tools:
+
+-   **[uv](https://github.com/astral-sh/uv#installation):** An extremely fast Python package installer and resolver.
+-   **[Tailscale](https://tailscale.com/download):** For securely exposing the health check endpoint to the internet.
+
+## Setup and Installation
+
+This project uses `uv` for package management.
+
+1.  **Clone the repository:**
+    ```bash
+    git clone <your-repo-url>/TailBeacon.git
+    cd TailBeacon
+    ```
+
+2.  **Install dependencies and sync the environment:**
+    `uv` will automatically create a virtual environment (`.venv`) and install all necessary dependencies based on the project configuration.
+    ```bash
+    uv sync
+    ```
+
+## Running the Server
+
+To run the development server, use the following command:
+
+```bash
+uv run uvicorn main:app --host 0.0.0.0 --port 54321
+```
+
+The server will be available at `http://0.0.0.0:54321`.
+
+## Deployment
+
+The easiest way to deploy the health check server and the Tailscale Funnel is to use the included setup script.
+
+Run the script with `sudo`:
+```bash
+sudo ./setup.sh
+```
+This script will:
+1.  Copy the `systemd` service files to the correct directory.
+2.  Reload the `systemd` daemon.
+3.  Enable and start both the `tailbeacon` and `tailscale-funnel` services.
+
+Your health check will be up and running immediately.
+
+
+<details>
+<summary>Manual Deployment Instructions</summary>
+
+### Running as a Systemd Service
+
+To ensure the health check server runs automatically on boot and restarts if it fails, you can set it up as a `systemd` service. A service file (`tailbeacon.service`) is included in this repository.
+
+1.  **Copy the service file:**
+    Move the service file to the systemd directory. This requires `sudo`.
+    ```bash
+    sudo cp tailbeacon.service /etc/systemd/system/tailbeacon.service
+    ```
+
+2.  **Reload the systemd daemon:**
+    This makes systemd aware of the new service.
+    ```bash
+    sudo systemctl daemon-reload
+    ```
+
+3.  **Enable and Start the service:**
+    ```bash
+    sudo systemctl enable tailbeacon.service
+    sudo systemctl start tailbeacon.service
+    ```
+
+4.  **Check the status:**
+    To verify that the service is running correctly, use the following command:
+    ```bash
+    sudo systemctl status tailbeacon.service
+    ```
+
+### Exposing to the Internet (Tailscale)
+
+To make the funnel persistent, you can use the included `tailscale-funnel.service` file.
+
+1.  **Copy the service file:**
+    ```bash
+    sudo cp tailscale-funnel.service /etc/systemd/system/tailscale-funnel.service
+    ```
+
+2.  **Reload, Enable, and Start:**
+    ```bash
+    sudo systemctl daemon-reload
+    sudo systemctl enable tailscale-funnel.service
+    sudo systemctl start tailscale-funnel.service
+    ```
+
+</details>
+
+## Next Steps
+
+After deployment, your server will be accessible at `https://<your-machine-name>.<your-tailnet>.ts.net`. You can find your specific tailnet name in the Tailscale admin console.
+
+The full URL for your health check to add to an uptime monitor is:
+`https://<your-machine-name>.<your-tailnet>.ts.net/health`
+
+## Health Check Endpoint
+
+
+```bash
+curl http://localhost:54321/health
+```
+
+A successful response will be:
+
+```json
+{
+  "status": "ok"
+}
+```
