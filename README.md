@@ -175,5 +175,36 @@ A successful response will be:
 }
 ```
 
+## Server Optimization (Laptops)
+
+If you are running this on a laptop as a home server, you may experience intermittent "Down" notifications due to power management or network sleep states. Follow these steps to ensure maximum stability:
+
+### 1. Disable Lid-Close Suspend
+By default, most laptops are configured to suspend when the lid is closed. To keep the server running with the lid closed:
+
+1.  **System-level:** Edit `/etc/systemd/logind.conf` and set the following values:
+    ```conf
+    HandleLidSwitch=ignore
+    HandleLidSwitchExternalPower=ignore
+    HandleLidSwitchDocked=ignore
+    ```
+2.  **Apply changes:** `sudo systemctl restart systemd-logind`
+3.  **Desktop-level (if using GNOME):** Run the following command to ensure the desktop environment doesn't override the system setting:
+    ```bash
+    gsettings set org.gnome.settings-daemon.plugins.power lid-close-ac-action 'nothing'
+    ```
+
+### 2. Disable Wi-Fi Power Saving
+Wi-Fi power saving can cause the network card to "nap," leading to connection timeouts from external monitors.
+
+1.  **Edit configuration:** Open `/etc/NetworkManager/conf.d/default-wifi-powersave-on.conf`.
+2.  **Set value to 2 (Disable):**
+    ```conf
+    [connection]
+    wifi.powersave = 2
+    ```
+3.  **Apply changes:** `sudo systemctl restart NetworkManager`
+
 ***
 Made in Colombia 🇨🇴 with ❤️
+
