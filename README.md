@@ -205,6 +205,18 @@ Wi-Fi power saving can cause the network card to "nap," leading to connection ti
     ```
 3.  **Apply changes:** `sudo systemctl restart NetworkManager`
 
+### 3. Disable IPv6 (Optional but Recommended)
+IPv6 address rotation (Privacy Extensions) can cause intermittent network "flaps" that trigger timeouts. Disabling IPv6 forces the system to use a stable IPv4 connection.
+
+1.  **Create a configuration file:** `sudo nano /etc/sysctl.d/99-tailscale-stability.conf`
+2.  **Add the following lines:**
+    ```conf
+    net.ipv6.conf.all.disable_ipv6 = 1
+    net.ipv6.conf.default.disable_ipv6 = 1
+    net.ipv6.conf.lo.disable_ipv6 = 1
+    ```
+3.  **Apply changes:** `sudo sysctl -p /etc/sysctl.d/99-tailscale-stability.conf`
+
 ***
 Made in Colombia 🇨🇴 with ❤️
 
